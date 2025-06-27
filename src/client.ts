@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export class JinaAIAPIClient {
     private readonly client: AxiosInstance;
@@ -11,42 +11,61 @@ export class JinaAIAPIClient {
         }
         this.apiKey = apiKey;
         this.client = axios.create({
-            baseURL: this.baseUrl,
             headers: {
                 'Authorization': `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
-                'Accept-Encoding': 'identity'
+                'Accept-Encoding': 'identity', // Required to avoid compressed responses
+                'Accept': 'application/json',
             }
         });
     }
 
-    private async post<T>(endpoint: string, data: unknown): Promise<T> {
+    private async post<T>(url: string, data: unknown, config?: AxiosRequestConfig): Promise<T> {
         try {
-            const response = await this.client.post<T>(endpoint, data);
+            const response = await this.client.post<T>(url, data, config);
             return response.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error(`Error calling Jina AI API at ${endpoint}:`, error.response?.data);
-                throw new Error(error.response?.data?.detail || error.message);
+            if (axios.isAxiosError(error) && error.response) {
+                console.error('Jina AI API Error:', JSON.stringify(error.response.data, null, 2));
+                throw new Error(`Jina AI API Error: ${error.response.status} ${error.response.statusText}`);
             }
-            console.error(`Unexpected error calling Jina AI API at ${endpoint}:`, error);
-            throw new Error('An unexpected error occurred.');
+            console.error('Unexpected Jina AI API Error:', error);
+            throw new Error('An unexpected error occurred with the Jina AI API.');
         }
     }
 
-    public embeddings(input: string | string[], model: string): Promise<any> {
-        return this.post('/embeddings', { input, model });
+    public embeddings(data: Record<string, any>) {
+        const url = `${this.baseUrl}/embeddings`;
+        return this.post(url, data);
     }
 
-    public rerank(documents: string[], query: string, model: string, top_n?: number): Promise<any> {
-        return this.post('/rerank', { documents, query, model, top_n });
+    public rerank(data: Record<string, any>) {
+        const url = `${this.baseUrl}/rerank`;
+        return this.post(url, data);
     }
 
-    public generate(input: any, model: string, options?: any): Promise<any> {
-        return this.post('/chat/completions', {
-            messages: [{ role: 'user', content: input }],
-            model,
-            ...options,
-        });
+    public classify(data: Record<string, any>) {
+        const url = `${this.baseUrl}/classify`;
+        return this.post(url, data);
+    }
+
+    public deepsearch(data: Record<string, any>) {
+        const url = 'https://deepsearch.jina.ai/v1/chat/completions';
+        return this.post(url, data);
+    }
+
+    public read(data: Record<string, any>, headers?: Record<string, string>) {
+        const readerUrl = 'https://r.jina.ai/';
+        return this.post(readerUrl, { url: data.url }, { headers });
+    }
+
+    public search(data: Record<string, any>, headers?: Record<string, string>) {
+        const searchUrl = 'https://s.jina.ai/';
+        return this.post(searchUrl, { q: data.q }, { headers });
+    }
+
+    public segment(data: Record<string, any>) {
+        const segmentUrl = 'https://segment.jina.ai/';
+        return this.post(segmentUrl, data);
     }
 } 

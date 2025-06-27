@@ -4,6 +4,19 @@
 
 An MCP server for Jina AI, providing tools for embeddings, reranking, and generation. This is the Node.js version.
 
+## Available Tools
+
+This server provides the following tools, which are direct interfaces to the Jina AI Search Foundation APIs:
+
+-   **`embeddings`**: Creates an embedding vector representing the input text.
+-   **`rerank`**: Reranks a list of documents based on a query.
+-   **`read`**: Extracts clean, LLM-friendly content from a single website URL.
+-   **`search`**: Performs a web search and returns LLM-friendly results.
+-   **`deepsearch`**: Combines web searching, reading, and reasoning for comprehensive investigation.
+-   **`segment`**: Splits text into semantic chunks or counts tokens.
+-   **`classify`**: Performs zero-shot classification for text.
+-   **`get_help`**: Returns the full Jina AI API documentation used to build this server.
+
 ## Connecting with MCP Clients
 
 To connect this server to your MCP-compatible client (like Cursor, shell-ai, etc.), you first need to publish this package to NPM or install it from a local path.
@@ -29,14 +42,6 @@ Example for `mcpServers.json`:
 ```
 
 **Note:** Passing the API key via `env` in the configuration is more secure than a global environment variable.
-
-## Features
-
-This server exposes the following tools from the Jina AI API:
-
--   **`embeddings`**: Creates an embedding vector representing the input text.
--   **`rerank`**: Reranks a list of documents based on a query.
--   **`generate`**: Generates a response from a chat model (Completions API).
 
 ## Local Development
 
