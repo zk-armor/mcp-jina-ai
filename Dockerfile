@@ -1,24 +1,29 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim
+# ---- Base Stage ----
+FROM node:20-slim AS base
+WORKDIR /usr/src/app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-# Set the working directory in the container
-WORKDIR /app
+# ---- Dependencies Stage ----
+FROM base AS deps
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --prod --frozen-lockfile
 
-# Copy the dependency definitions
-COPY pyproject.toml ./
-
-# Install dependencies using uv for speed
-# First, install uv itself
-RUN pip install uv
-# Then, use uv to install the project dependencies
-RUN uv pip install --system --no-cache .
-
-# Copy the rest of the application's code
+# ---- Build Stage ----
+FROM base AS build
+WORKDIR /usr/src/app
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+RUN pnpm build
 
-# Environment variable for the Jina AI API key
-# This must be provided at runtime using `docker run -e JINA_API_KEY=...`
-ENV JINA_API_KEY=""
+# ---- Production Stage ----
+FROM base
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY package.json .
 
-# The command to run the server when the container starts
-CMD ["python", "main.py"] 
+# Set up the command to run the server
+CMD ["node", "dist/index.js"]
