@@ -1,11 +1,15 @@
 {
   "name": "jina-ai-mcp-server-nodejs",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "An MCP server for Jina AI, providing tools for embeddings, reranking, and generation. NodeJS Version.",
   "main": "dist/index.js",
   "bin": {
-    "jina-ai-mcp-server-nodejs": "./dist/index.js"
+    "jina-ai-mcp-server-nodejs": "bin/cli.js"
   },
+  "files": [
+    "dist",
+    "bin"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",

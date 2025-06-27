@@ -38,45 +38,23 @@ This server exposes the following tools from the Jina AI API:
 -   **`rerank`**: Reranks a list of documents based on a query.
 -   **`generate`**: Generates a response from a chat model (Completions API).
 
-## Development
+## Local Development
 
-### Prerequisites
-
--   Node.js (v16 or higher)
--   npm
-
-### Installation
-
-1.  Clone the repository:
-    ```sh
-    git clone https://github.com/zk-armor/mcp-jina-ai.git
-    cd mcp-jina-ai
-    git checkout nodejs
-    ```
-
+1.  Clone the repository.
 2.  Install dependencies:
-    ```sh
+    ```bash
     npm install
     ```
-
-3.  Set up your environment variables. Create a `.env` file in the root of the project:
-    ```sh
-    cp .env.example .env
+3.  Create a `.env` file in the root of the project and add your Jina AI API key.
+    ```bash
+    echo "JINA_API_KEY=your_jina_ai_api_key_here" > .env
     ```
-    Now, edit the `.env` file and add your Jina AI API key:
+4.  Run the server in development mode:
+    ```bash
+    npm run dev
     ```
-    JINA_API_KEY=your_super_secret_api_key
-    ```
 
-### Running in Development Mode
-
-To run the server in development mode with hot-reloading:
-
-```sh
-npm run dev
-```
-
-The server will start, and you can connect to it from a local MCP client for testing.
+## Docker
 
 ## Building for Production
 
