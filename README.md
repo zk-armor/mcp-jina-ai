@@ -1,106 +1,93 @@
-# Jina AI MCP Server
+# Jina AI MCP Server (Node.js Version)
 
-[![PyPI version](https://badge.fury.io/py/jina-ai-mcp-server.svg)](https://badge.fury.io/py/jina-ai-mcp-server)
+[![NPM version](https://badge.fury.io/js/jina-ai-mcp-server-nodejs.svg)](https://badge.fury.io/js/jina-ai-mcp-server-nodejs)
 
-This project provides a Model Context Protocol (MCP) server that exposes the Jina AI Search Foundation APIs as a suite of tools for Large Language Models (LLMs). It allows AI agents and applications to easily leverage Jina's powerful search, reranking, and content-reading capabilities.
+An MCP server for Jina AI, providing tools for embeddings, reranking, and generation. This is the Node.js version.
 
-This server is built using `mcp.py` (specifically the `FastMCP` framework) and is designed to be lightweight, fast, and easy to deploy.
+## Connecting with MCP Clients
 
-## 🔌 Connecting with MCP Clients
+To connect this server to your MCP-compatible client (like Cursor, shell-ai, etc.), you first need to publish this package to NPM or install it from a local path.
 
-To use this server with an MCP client (like the Claude extension), you need to add its configuration to your `mcpServers.json` file. The recommended way is to run the server directly from PyPI using `uvx`.
+### Using with `npx` (After Publishing)
 
-First, get your free API key from [jina.ai](https://jina.ai/?sui=apikey).
+Once the package is published on NPM, you can configure your client to use it with `npx`. Create a `.env` file with your `JINA_API_KEY` in the directory where you run the client, or make sure the environment variable is set.
 
-Then, add the following configuration, inserting your API key:
+Example for `mcpServers.json`:
 
 ```json
 {
-  "mcpServers": {
-    "jina-ai": {
-      "command": "uvx",
-      "args": [
-        "jina-ai-mcp-server"
-      ],
-      "env": {
-        "JINA_API_KEY": "your_api_key_here"
-      }
+  "jina-ai-server": {
+    "command": "npx",
+    "args": [
+      "jina-ai-mcp-server-nodejs"
+    ],
+    "env": {
+      "JINA_API_KEY": "your_jina_api_key_here"
     }
   }
 }
 ```
 
-For alternative run methods, see the sections below.
+**Note:** Passing the API key via `env` in the configuration is more secure than a global environment variable.
 
 ## Features
 
-The server exposes the following Jina AI APIs as MCP tools:
+This server exposes the following tools from the Jina AI API:
 
--   **Embeddings**: `jina_embeddings` - Convert text/images to vectors.
--   **Reranker**: `jina_rerank` - Refine search results for relevance.
--   **Reader**: `jina_reader` - Extract LLM-friendly content from URLs.
--   **Search**: `jina_search` - Perform web searches optimized for LLMs.
--   **DeepSearch**: `jina_deepsearch` - Combine search, reading, and reasoning.
--   **Segmenter**: `jina_segmenter` - Tokenize and chunk text.
--   **Text Classifier**: `jina_classify_text` - Classify text with zero-shot models.
--   **Image Classifier**: `jina_classify_image` - Classify images with zero-shot models.
+-   **`embeddings`**: Creates an embedding vector representing the input text.
+-   **`rerank`**: Reranks a list of documents based on a query.
+-   **`generate`**: Generates a response from a chat model (Completions API).
 
-## 🚀 Advanced: Running the Server Manually
+## Development
 
-If you prefer not to use the `mcpServers.json` configuration, you can run the server manually.
+### Prerequisites
 
-### Configuration
+-   Node.js (v16 or higher)
+-   npm
 
-Before running the server, you must set the `JINA_API_KEY` environment variable.
+### Installation
 
-```bash
-export JINA_API_KEY="your_api_key_here"
+1.  Clone the repository:
+    ```sh
+    git clone https://github.com/zk-armor/mcp-jina-ai.git
+    cd mcp-jina-ai
+    git checkout nodejs
+    ```
+
+2.  Install dependencies:
+    ```sh
+    npm install
+    ```
+
+3.  Set up your environment variables. Create a `.env` file in the root of the project:
+    ```sh
+    cp .env.example .env
+    ```
+    Now, edit the `.env` file and add your Jina AI API key:
+    ```
+    JINA_API_KEY=your_super_secret_api_key
+    ```
+
+### Running in Development Mode
+
+To run the server in development mode with hot-reloading:
+
+```sh
+npm run dev
 ```
 
-### Using Docker
+The server will start, and you can connect to it from a local MCP client for testing.
 
-A Dockerfile is provided for containerized deployments.
+## Building for Production
 
-1.  **Build the Docker Image**:
-    ```bash
-    docker build -t jina-ai-mcp-server .
-    ```
+To compile the TypeScript code to JavaScript:
 
-2.  **Run the Docker Container**:
-    ```bash
-    docker run -e JINA_API_KEY="your_api_key_here" --rm -it jina-ai-mcp-server
-    ```
+```sh
+npm run build
+```
+The compiled output will be in the `dist` directory.
 
-### From Source
-
-If you have cloned the repository, you can run it locally.
-
-1.  **Install Dependencies**:
-    ```bash
-    # Using uv
-    uv venv
-    source .venv/bin/activate
-    uv pip install -e .
-    ```
-
-2.  **Run the Server**:
-    ```bash
-    python -m jina_ai_mcp_server.main
-    ```
-
-## 📦 Publishing (For Developers)
-
-To publish a new version to PyPI:
-
-1.  **Install build tools**:
-    ```bash
-    pip install build twine
-    ```
-2.  **Build the package**:
-    ```bash
-    python -m build
-    ```
-3.  **Upload to PyPI**:
-    ```bash
-    twine upload dist/*
-    ``` 
+You can then run the compiled code with:
+```sh
+npm start
+``` 
